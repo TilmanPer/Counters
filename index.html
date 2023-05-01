@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Counters</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+        integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;800&family=Outfit:wght@200&family=Rowdies:wght@700&display=swap"
+        rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+    <div id="dark-mode-switch">
+        <div class="sun" id="sun-emoji" aria-label="Activate Light mode">☀️</div>
+        <div class="moon hidden" id="moon-emoji" aria-label="Activate Dark mode">🌑</div>
+    </div>
+    
+    <div class="settings">
+        <h1>CREATE</h1>
+        <div class="form-group">
+            <label></label>
+            <input type="number" id="numberOfCounters" class="form-control" placeholder="Counter Amount"
+                autocomplete="off">
+        </div>
+        <div class="form-group">
+            <label></label>
+            <input type="number" id="incrementStep" class="form-control" placeholder="Increment Step"
+                autocomplete="off">
+        </div>
+        <button id="createCountersButton" class="btn btn-primary">Create counters</button>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div id="counters" class="counters"></div>
+        </div>
+    </div>
+    <script type="text/javascript" src="script.js"></script>
+    <script>
+        // Add event listener to the create counters button
+        document.getElementById("createCountersButton").addEventListener("click", function () {
+            let numberOfCounters = document.getElementById("numberOfCounters").value;
+            let incrementStep = document.getElementById("incrementStep").value;
+            createCounters(numberOfCounters, incrementStep);
+        });
+        // Add event listener to the dark mode checkbox
+
+    </script>
+</body>
+
+</html>
