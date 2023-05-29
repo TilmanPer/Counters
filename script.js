@@ -1,139 +1,127 @@
-function cloneAndPlay(audioFile) {
-    var clone = audioFile.cloneNode();
-    clone.volume = 0.1;
-    clone.play();
-}
+let countersAmount = 0;
 
-let countersAmount = 1;
-// Function to create the counters
-function createCounters(numberOfCounters, incrementStep) {
+class Counter {
+    constructor(id, incrementStep = 1) {
+        this.id = id;
+        this.incrementStep = incrementStep;
+        this.counterValue = 0;
+        this.sounds = {
+            incrementSound: new Audio("./Sounds/button.mp3"),
+            decrementSound: new Audio("./Sounds/reversed.mp3"),
+            deleteSound: new Audio("./Sounds/papercrumble.mp3"),
+            createSound: new Audio("./Sounds/pop.mp3")
+        };
+        this.countersDiv = document.getElementById("counters");
+        this.countersDiv.appendChild(this.createCounterDiv());
+        this.cloneAndPlay(this.sounds.createSound);
+    }
 
-    numberOfCounters = (!numberOfCounters) ? 1 : numberOfCounters;
-    incrementStep = (!incrementStep) ? 1 : incrementStep;
+    cloneAndPlay(audioFile) {
+        let clone = audioFile.cloneNode();
+        clone.volume = 0.1;
+        clone.play();
+    }
 
-    let incrementSound = new Audio("./Sounds/button.mp3");
-    let decrementSound = new Audio("./Sounds/reversed.mp3");
-    let deleteSound = new Audio("./Sounds/papercrumble.mp3");
-    let createSound = new Audio("./Sounds/pop.mp3");
-    cloneAndPlay(createSound);
+    handleClickEvent(input, display) {
+        input.style.display = "inline-block";
+        input.focus();
+        display.style.display = "none";
+    }
 
-    let countersDiv = document.getElementById("counters");
-    let newCountersAmount = countersAmount + parseInt(numberOfCounters);
+    handleNameEvents(input, display, event) {
+        if (event.key === "Enter" || event.type === "blur") {
+            if (input.value) {
+                display.innerHTML = input.value;
+            }
+            input.style.display = "none";
+            display.style.display = "inline-block";
+        }
+    }
 
-    for (i = countersAmount; i < newCountersAmount; i++, countersAmount++) {
-        console.log(newCountersAmount);
-        // Create the counter elements
+    handleSizeEvents(input, display, event) {
+        if (event.key === "Enter" || event.type === "blur") {
+            this.incrementStep = parseInt(input.value);
+            display.innerHTML = this.incrementStep;
+            input.style.display = "none";
+            display.style.display = "inline-block";
+        }
+    }
+
+    createInputField(inputClass, displayClass, displayText) {
+        let input = document.createElement("input");
+        input.setAttribute("class", inputClass);
+        input.style.display = "none";
+
+        let display = document.createElement("span");
+        display.setAttribute("class", displayClass);
+        display.innerHTML = displayText;
+
+        if (inputClass === "counter-name-input") {
+            display.addEventListener("click", () => this.handleClickEvent(input, display));
+            input.addEventListener("keyup", (event) => this.handleNameEvents(input, display, event));
+            input.addEventListener("blur", () => this.handleNameEvents(input, display));
+        } else {
+            display.addEventListener("click", () => this.handleClickEvent(input, display));
+            input.addEventListener("keyup", (event) => this.handleSizeEvents(input, display, event));
+            input.addEventListener("blur", () => this.handleSizeEvents(input, display));
+        }
+
+        return [input, display];
+    }
+
+    createCounterDiv() {
         let counterDiv = document.createElement("div");
-        counterDiv.setAttribute("id", "counter" + i);
+        counterDiv.setAttribute("id", "counter" + this.id);
         counterDiv.setAttribute("class", "counter");
 
-        // Create the counter name elements
-        let counterNameDiv = document.createElement("div");
-        counterNameDiv.setAttribute("class", "counter-name");
-        let counterNameLabel = document.createElement("label");
-        let counterNameInput = document.createElement("input");
-        counterNameInput.setAttribute("class", "counter-name-input");
-        counterNameInput.style.display = "none";
-        let counterNameDisplay = document.createElement("span");
-        counterNameDisplay.setAttribute("class", "counter-name-display");
-        counterNameDisplay.innerHTML = "Counter " + i;
-        // Add event listeners for counter name
-        counterNameDisplay.addEventListener("click", function () {
-            counterNameInput.style.display = "inline-block";
-            counterNameInput.focus();
-            counterNameDisplay.style.display = "none";
-        });
-        counterNameInput.addEventListener("keyup", function (event) {
-            if (event.key === "Enter") {
-                counterNameDisplay.innerHTML = counterNameInput.value;
-                counterNameInput.style.display = "none";
-                counterNameDisplay.style.display = "inline-block";
-            }
-        });
-        counterNameInput.addEventListener("blur", function () {
-            if (counterNameInput.value) {
-                counterNameDisplay.innerHTML = counterNameInput.value;
-            }
-            counterNameInput.style.display = "none";
-            counterNameDisplay.style.display = "inline-block";
-        });
-
-        let decrementButton = document.createElement("button");
-        decrementButton.setAttribute("id", "decrement" + i);
-        decrementButton.setAttribute("class", "decrement-btn counter-btn");
-        decrementButton.innerHTML = "-";
+        let [counterNameInput, counterNameDisplay] = this.createInputField("counter-name-input", "counter-name-display", "Counter " + this.id);
+        let [incrementSizeInput, incrementSize] = this.createInputField("increment-size-input", "increment-size", this.incrementStep);
 
         let counterValue = document.createElement("span");
-        counterValue.setAttribute("id", "value" + i);
         counterValue.setAttribute("class", "counter-value");
         counterValue.innerHTML = "0";
 
-        let incrementButton = document.createElement("button");
-        incrementButton.setAttribute("id", "increment" + i);
-        incrementButton.setAttribute("class", "counter-btn increment-btn");
-        incrementButton.innerHTML = "+";
-
-        let incrementSizeInput = document.createElement("input");
-        incrementSizeInput.setAttribute("type", "number");
-        incrementSizeInput.setAttribute("class", "increment-size-input");
-        incrementSizeInput.value = incrementStep;
-        incrementSizeInput.style.display = "none";
-
-        let incrementSize = document.createElement("span");
-        incrementSize.setAttribute("class", "increment-size");
-        incrementSize.innerHTML = incrementStep;
-        incrementSize.addEventListener("click", function () {
-            incrementSizeInput.style.display = "inline-block";
-            incrementSizeInput.focus();
-            incrementSize.style.display = "none";
-        });
-        incrementSizeInput.addEventListener("keyup", function (event) {
-            if (event.key === "Enter") {
-                incrementStep = incrementSizeInput.value;
-                incrementSize.innerHTML = incrementStep;
-                incrementSizeInput.style.display = "none";
-                incrementSize.style.display = "inline-block";
-            }
-        });
-        incrementSizeInput.addEventListener("blur", function () {
-            incrementStep = incrementSizeInput.value;
-            incrementSize.innerHTML = incrementStep;
-            incrementSizeInput.style.display = "none";
-            incrementSize.style.display = "inline-block";
-        });
+        let decrementButton = this.createButton("decrement-btn counter-btn", "-", counterValue);
+        let incrementButton = this.createButton("increment-btn counter-btn", "+", counterValue);
 
         let deleteButton = document.createElement("button");
-        deleteButton.setAttribute("class", "counter-btn delete-btn");
+        deleteButton.setAttribute("class", "delete-btn counter-btn");
         deleteButton.innerHTML = "🗑️";
-        deleteButton.addEventListener("click", function () {
-            cloneAndPlay(deleteSound);
-            countersDiv.removeChild(counterDiv);
+        deleteButton.addEventListener("click", () => {
+            this.cloneAndPlay(this.sounds.deleteSound);
+            counterDiv.parentNode.removeChild(counterDiv);
         });
 
-        // Append the elements to the counters div
-        counterNameDiv.appendChild(counterNameLabel);
-        counterNameDiv.appendChild(counterNameInput);
-        counterNameDiv.appendChild(counterNameDisplay);
-        counterDiv.appendChild(counterNameDiv);
-        counterDiv.appendChild(decrementButton);
-        counterDiv.appendChild(counterValue);
-        counterDiv.appendChild(incrementButton);
-        counterDiv.appendChild(incrementSize);
-        counterDiv.appendChild(incrementSizeInput);
-        counterDiv.appendChild(deleteButton);
-        countersDiv.appendChild(counterDiv);
+        counterDiv.append(counterNameDisplay, decrementButton, counterValue, incrementButton, incrementSize, incrementSizeInput, deleteButton);
+        return counterDiv;
+    }
 
-        // Add event listeners to the buttons
-        decrementButton.addEventListener("click", function () {
-            let currentValue = parseInt(counterValue.innerHTML);
-            counterValue.innerHTML = currentValue - incrementStep;
-            cloneAndPlay(decrementSound);
-        });
-        incrementButton.addEventListener("click", function () {
-            let currentValue = parseInt(counterValue.innerHTML);
-            counterValue.innerHTML = parseInt(currentValue) + parseInt(incrementStep);
-            cloneAndPlay(incrementSound);
-        });
+    createButton(buttonClass, buttonValue, counterValue) {
+        let button = document.createElement("button");
+        button.setAttribute("class", buttonClass);
+        button.innerHTML = buttonValue;
+
+        if (buttonValue === "+") {
+            button.addEventListener("click", () => {
+                this.counterValue += this.incrementStep;
+                counterValue.innerHTML = this.counterValue;
+                this.cloneAndPlay(this.sounds.incrementSound);
+            });
+        } else {
+            button.addEventListener("click", () => {
+                this.counterValue -= this.incrementStep;
+                counterValue.innerHTML = this.counterValue;
+                this.cloneAndPlay(this.sounds.decrementSound);
+            });
+        }
+
+        return button;
+    }
+}
+
+function createCounters(numberOfCounters = 1, incrementStep = 1) {
+    for (let i = 0; i < numberOfCounters; i++) {
+        new Counter(countersAmount++, incrementStep);
     }
 }
 
@@ -157,7 +145,7 @@ moonEmoji.addEventListener("click", function () {
 });
 
 function getMode() {
-    if (localStorage.getItem("DesignMode") == "Dark") {
+    if (localStorage.getItem("DesignMode") === "Dark") {
         document.body.classList.toggle("dark-mode");
         sunEmoji.classList.toggle("hidden");
         moonEmoji.classList.remove("hidden");
